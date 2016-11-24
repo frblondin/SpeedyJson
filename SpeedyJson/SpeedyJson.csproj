@@ -38,6 +38,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Enums.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7ea1c1650d506225, processorArchitecture=MSIL">
+      <HintPath>packages\Enums.NET.1.0.0\lib\net45\Enums.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,18 +59,23 @@
     <Compile Include="Linq\WhileExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ArrayProvider.cs" />
+    <Compile Include="Providers\EnumProvider.cs" />
     <Compile Include="Providers\ImmutableListProvider.cs" />
+    <Compile Include="Providers\GuidProvider.cs" />
     <Compile Include="Providers\IntProvider.cs" />
+    <Compile Include="Providers\DictionaryProvider.cs" />
     <Compile Include="Providers\ListProvider.cs" />
-    <Compile Include="Providers\OneDimensionContainerProvider.cs" />
     <Compile Include="Providers\StringProvider.cs" />
+    <Compile Include="Providers\StructInfoProvider.cs" />
     <Compile Include="Providers\TypeInfoProvider.cs" />
     <Compile Include="Tools\ExpressionReflector.cs" />
     <Compile Include="Tools\Guard.cs" />
     <Compile Include="Tools\StringChunk.cs" />
     <Compile Include="Tools\StringUtils.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

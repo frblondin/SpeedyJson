@@ -57,7 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\DictionaryProviderTest.cs" />
+    <Compile Include="Providers\ArrayProviderTest.cs" />
+    <Compile Include="Providers\GuidProviderTest.cs" />
+    <Compile Include="Providers\StringProviderTest.cs" />
+    <Compile Include="Providers\ListProviderTest.cs" />
     <Compile Include="Providers\ImmutableListProviderTest.cs" />
+    <Compile Include="Providers\EnumProviderTest.cs" />
+    <Compile Include="Providers\IntProviderTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

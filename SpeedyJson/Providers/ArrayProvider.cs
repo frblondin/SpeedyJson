@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace SpeedyJson.Providers
 {
-    internal class ArrayProvider : OneDimensionContainerProvider
+    internal class ArrayProvider : ListProvider
     {
-        internal static Expression ListToArray(Expression list, Type elementType)
+        internal ArrayProvider(Type elementType) : base(elementType.MakeArrayType(1), elementType)
         {
-            var method = ExpressionReflector.GetMethodInfo(() => Enumerable.ToArray<object>(null), true)
-                .MakeGenericMethod(elementType);
-            return Expression.Call(method, list);
         }
 
-        internal ArrayProvider(Type elementType)
-            : base(elementType.MakeArrayType(), elementType, ListToArray)
+        protected override Expression ListToResult(Expression list)
         {
+            var method = ExpressionReflector.GetMethodInfo(() => Enumerable.ToArray<object>(null), true)
+                .MakeGenericMethod(ElementType);
+            return Expression.Call(method, list);
         }
     }
 }

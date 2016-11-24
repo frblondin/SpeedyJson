@@ -9,14 +9,10 @@ namespace SpeedyJson.Tools
 {
     public static class StringUtils
     {
-        internal const int Whitespace = ' ';
-        internal const int Tab = '\t';
-        internal const int CarriageReturn = '\r';
-        internal const int LineFeed = '\n';
         internal const int Backslash = '\\';
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe int ReadJsonString(char* pointer, int length, int position, out bool anyEscape)
+        internal static unsafe int ReadJsonString(char* pointer, int length, int position, bool quoted, out bool anyEscape)
         {
             anyEscape = false;
             bool backslash = false;
@@ -50,7 +46,8 @@ namespace SpeedyJson.Tools
                 }
                 else
                 {
-                    if (c == '"') return position - 1;
+                    if ((quoted && c == '"') ||
+                        (!quoted && (char.IsWhiteSpace(c) || c == ',' || c == '{' || c == '}' || c == '[' || c == ']'))) return position - 1;
                 }
                 backslash = false;
                 position++;
@@ -61,11 +58,7 @@ namespace SpeedyJson.Tools
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal unsafe static int SkipWhitespaces(char* pointer, int length, int position)
         {
-            while (position < length - 1 &&
-                pointer[position] == Whitespace ||
-                pointer[position] == Tab ||
-                pointer[position] == CarriageReturn ||
-                pointer[position] == LineFeed)
+            while (position < length - 1 && char.IsWhiteSpace(pointer[position]))
             {
                 position++;
             }

@@ -28,26 +28,43 @@ namespace SpeedyJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private StringChunk TryReadString()
+        private StringChunk TryReadString(bool quoted)
         {
             SkipWhitespaces();
-            if (_pointer[_position] != '"')
-                return default(StringChunk);
-            var start = ++_position;
+
+            // Change mode to quoted if there is a quote
+            if (_pointer[_position] == '"') quoted = true;
+
+            if (quoted)
+            {
+                if (_pointer[_position] != '"') return default(StringChunk);
+                _position++;
+            }
+            var start = _position;
             bool anyEscape;
-            var end = StringUtils.ReadJsonString(_pointer, _length, _position, out anyEscape);
+            var end = StringUtils.ReadJsonString(_pointer, _length, _position, quoted, out anyEscape);
             if (end == -1)
-                throw new JsonReadException($"Unbalanced string quotes.");
-            _position = end + 2;
+                throw new JsonReadException($"Unbalanced string quotes at position {_position}.");
+            _position = end + 1;
+            if (quoted) _position++;
             return new StringChunk(_pointer, start, end, anyEscape);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString()
         {
-            var result = TryReadString();
+            var result = TryReadString(true);
             if (!result.IsValid)
-                throw new JsonReadException("Input is not a valid Json.");
+                throw new JsonReadException($"Input is not a valid Json at position {_position}.");
+            return result.ToString();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadUnquoted()
+        {
+            var result = TryReadString(false);
+            if (!result.IsValid)
+                throw new JsonReadException($"Input is not a valid Json at position {_position}.");
             return result.ToString();
         }
 
@@ -55,7 +72,7 @@ namespace SpeedyJson
         public StringChunk ReadMemberName()
         {
             int position = _position;
-            var result = TryReadString();
+            var result = TryReadString(true);
             if (!result.IsValid)
                 throw new JsonReadException($"Unable to read member name at position {position}.");
             return result;

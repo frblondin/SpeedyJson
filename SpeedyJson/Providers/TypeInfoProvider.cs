@@ -19,7 +19,10 @@ namespace SpeedyJson.Providers
             var settings = Expression.Parameter(typeof(JsonSettings));
 
             _cache[typeof(string)] = new StringProvider();
-            _cache[typeof(int)] = new IntProvider();
+            _cache[typeof(int)] = new IntProvider(false);
+            _cache[typeof(int?)] = new IntProvider(true);
+            _cache[typeof(Guid)] = new GuidProvider(false);
+            _cache[typeof(Guid?)] = new GuidProvider(true);
         }
 
         private static readonly IDictionary<Type, TypeInfoProvider> _cache = new Dictionary<Type, TypeInfoProvider>();
@@ -44,13 +47,20 @@ namespace SpeedyJson.Providers
                 (type.GetGenericTypeDefinition() == typeof(List<>) ||
                 type.GetGenericTypeDefinition() == typeof(IList<>)))
             {
-                return new ListProvider(type.GetGenericArguments()[0]);
+                return new ListProvider(type, type.GetGenericArguments()[0]);
             }
             if (type.IsGenericType &&
                 (type.GetGenericTypeDefinition().FullName == "System.Collections.Immutable.ImmutableList`1" ||
                 type.GetGenericTypeDefinition().FullName == "System.Collections.Immutable.IImmutableList`1"))
             {
                 return new ImmutableListProvider(type.GetGenericArguments()[0], type);
+            }
+            if (type.IsEnum) return new EnumProvider(type);
+            if (type.IsGenericType &&
+                (type.GetGenericTypeDefinition() == typeof(Dictionary<,>) ||
+                type.GetGenericTypeDefinition() == typeof(IDictionary<,>)))
+            {
+                return new DictionaryProvider(type, type.GetGenericArguments()[0], type.GetGenericArguments()[1]);
             }
 
             return new TypeInfoProvider(type);
